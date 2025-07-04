@@ -15,7 +15,6 @@ PORT = 3306
 USER = "root"
 PASSWORD = "samueljuma"
 DATABASE = "ALX_prodev"
-TABLE = "user_data"
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -34,13 +33,14 @@ def stream_users_in_batches(batch_size):
             database=DATABASE,
         )
         cursor = conn.cursor()  # tuple rows: (uuid, name, email, age)
-        cursor.execute(f"SELECT * FROM {TABLE};")
+        cursor.execute(f"SELECT * FROM user_data;")
 
         while True:                              # ➊ LOOP #1
             batch = cursor.fetchmany(batch_size)
             if not batch:
                 break
             yield batch
+        return 
     except Error as e:
         print(f"MySQL error: {e}")
     finally:
