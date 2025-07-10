@@ -2,6 +2,7 @@
 
 import sqlite3
 import functools
+from datetime import datetime
 
 # Setup database // For testing purposes
 def setup_database():
@@ -32,10 +33,10 @@ def log_queries(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if args:
-            print(f"[SQL LOG] Query to be executed: {args[0]}")
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"[{timestamp}] [SQL LOG] Query to be executed: {args[0]}")
         return func(*args, **kwargs)
     return wrapper
-
 
 # Use of decorator
 @log_queries
