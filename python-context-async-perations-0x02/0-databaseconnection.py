@@ -18,7 +18,8 @@ def setup_database():
     ''', [
         ('Alice', 'alice@example.com', 25),
         ('Bob', 'bob@example.com', 30),
-        ('Carol', 'carol@example.com', 11)
+        ('Carol', 'carol@example.com', 11),
+        ('Dave', 'dave@example.com', 45)
     ])
     conn.commit()
     conn.close()
