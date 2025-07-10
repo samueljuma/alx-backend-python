@@ -9,15 +9,16 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL
+            email TEXT UNIQUE NOT NULL,
+            age INTEGER CHECK(age >= 0) DEFAULT 0
         )
     ''')
     cursor.executemany('''
-        INSERT OR IGNORE INTO users (name, email) VALUES (?, ?)
+        INSERT OR IGNORE INTO users (name, email, age) VALUES (?, ?, ?)
     ''', [
-        ('Alice', 'alice@example.com'),
-        ('Bob', 'bob@example.com'),
-        ('Carol', 'carol@example.com')
+        ('Alice', 'alice@example.com', 25),
+        ('Bob', 'bob@example.com', 30),
+        ('Carol', 'carol@example.com', 11)
     ])
     conn.commit()
     conn.close()
