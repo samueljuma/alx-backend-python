@@ -14,6 +14,8 @@ This project provides a simulated GitHub organization client built with Python 3
 - Fully documented modules, classes, and functions
 - Compliant with `pycodestyle` (version 2.5)
 - All files are executable and follow the `#!/usr/bin/env python3` convention
+- Unit tests use mocking (`unittest.mock`) to avoid external HTTP requests
+
 
 ## Running Tests
 
