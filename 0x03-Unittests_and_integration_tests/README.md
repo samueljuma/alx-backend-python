@@ -15,6 +15,8 @@ This project provides a simulated GitHub organization client built with Python 3
 - Compliant with `pycodestyle` (version 2.5)
 - All files are executable and follow the `#!/usr/bin/env python3` convention
 - Unit tests use mocking (`unittest.mock`) to avoid external HTTP requests
+- Memoization is tested to ensure methods are cached after the first call
+
 
 
 ## Running Tests
@@ -22,3 +24,14 @@ This project provides a simulated GitHub organization client built with Python 3
 Ensure dependencies are installed:
 ```bash
 pip3 install requests parameterized
+
+
+```bash 
+# PEP8/pycodestyle validation
+pip3 install pycodestyle==2.5.0
+pip3 install autopep8
+
+pycodestyle test_utils.py # check 
+
+autopep8 test_utils.py --in-place #fix 
+```
