@@ -28,6 +28,7 @@ class TestGithubOrgClient(unittest.TestCase):
         cls.get_patcher = patch('requests.get', **config)
         # Activate the patch and store the mock for use in test assertions
         cls.mock = cls.get_patcher.start()
+        cls().get_patcher = cls.get_patcher
 
     @parameterized.expand([
         ("google",),
