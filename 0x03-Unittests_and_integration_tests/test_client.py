@@ -8,6 +8,10 @@ from client import GithubOrgClient
 from fixtures import TEST_PAYLOAD
 
 
+@parameterized_class(
+    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+    TEST_PAYLOAD
+)
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
 
@@ -79,14 +83,6 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test has_license returns correct boolean"""
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
-
-
-@parameterized_class(
-    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
-    TEST_PAYLOAD
-)
-class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration tests using actual payload fixture values"""
 
     @classmethod
     def setUpClass(cls):
