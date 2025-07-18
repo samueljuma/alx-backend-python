@@ -2,7 +2,7 @@
 """Unit tests for GithubOrgClient"""
 
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, MagicMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 from fixtures import TEST_PAYLOAD
@@ -92,17 +92,24 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Start patching get_json and prepare fixtures"""
+        """Start patching requests.get and prepare fixtures"""
 
         cls.get_patcher = patch("client.get_json")
-        mock_get_json = cls.get_patcher.start()
+        mock_get = cls.get_patcher.start()
 
         def side_effect(url):
+            mock_response = MagicMock()
             if url == f"https://api.github.com/orgs/google":
-                return cls.org_payload
+                mock_response.json.return_value = cls.org_payload
             elif url == cls.org_payload["repos_url"]:
-                return cls.repos_payload
+                mock_response.json.return_value = cls.repos_payload
             else:
                 raise ValueError(f"Unhandled URL: {url}")
+            return mock_response
 
-        mock_get_json.side_effect = side_effect
+        mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patching requests.get"""
+        cls.get_patcher.stop()
