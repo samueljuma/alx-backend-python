@@ -17,6 +17,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Runs once before any test methods in this class"""
 
         # Create a mock that simulates sequential responses for .json() calls
         config = {'return_value.json.side_effect': [
@@ -118,6 +119,24 @@ class TestGithubOrgClient(unittest.TestCase):
             "apache-2.0"), self.apache2_repos)
         self.mock.assert_called()
 
+@parameterized_class(['org_payload', 'repos_payload',
+                      'expected_repos', 'apache2_repos'], TEST_PAYLOAD)
+class TestInntegrationGithubOrgClient(unittest.TestCase): 
+    """Integration test"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.get_patcher = patch('requests.get', side_effect=[
+            cls.org_payload, cls.repos_payload
+        ])
+        cls.mocked_get = cls.get_patcher.start()
+
     @classmethod
     def tearDownClass(cls):
         cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """test public repos """
+
+    def test_public_repos_with_license(self):
+        """test public with license"""
