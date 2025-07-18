@@ -17,7 +17,6 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Runs once before any test methods in this class"""
 
         # Create a mock that simulates sequential responses for .json() calls
         config = {'return_value.json.side_effect': [
@@ -28,7 +27,7 @@ class TestGithubOrgClient(unittest.TestCase):
         cls.get_patcher = patch('requests.get', **config)
         # Activate the patch and store the mock for use in test assertions
         cls.mock = cls.get_patcher.start()
-        cls().get_patcher = cls.get_patcher
+
 
     @parameterized.expand([
         ("google",),
@@ -121,5 +120,4 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Runs once after all test methods in this class"""
         cls.get_patcher.stop()
