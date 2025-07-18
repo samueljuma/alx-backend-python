@@ -29,7 +29,6 @@ class TestGithubOrgClient(unittest.TestCase):
         # Activate the patch and store the mock for use in test assertions
         cls.mock = cls.get_patcher.start()
 
-
     @parameterized.expand([
         ("google",),
         ("abc",),
@@ -119,9 +118,10 @@ class TestGithubOrgClient(unittest.TestCase):
             "apache-2.0"), self.apache2_repos)
         self.mock.assert_called()
 
+
 @parameterized_class(['org_payload', 'repos_payload',
                       'expected_repos', 'apache2_repos'], TEST_PAYLOAD)
-class TestInntegrationGithubOrgClient(unittest.TestCase): 
+class TestInntegrationGithubOrgClient(unittest.TestCase):
     """Integration test"""
 
     @classmethod
