@@ -3,10 +3,21 @@
 
 import unittest
 from unittest.mock import patch, PropertyMock
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
 
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos,
+    }
+    for org_payload, repos_payload, expected_repos, apache2_repos
+    in TEST_PAYLOAD
+])
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
 
@@ -17,6 +28,7 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json")
     def test_org(self, org_name, mock_get_json):
         """Test that GithubOrgClient.org returns expected payload"""
+
         test_payload = {
             "repos_url": f"https://api.github.com/orgs/{org_name}/repos"
         }
@@ -77,3 +89,20 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test has_license returns correct boolean"""
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+    @classmethod
+    def setUpClass(cls):
+        """Start patching get_json and prepare fixtures"""
+
+        cls.get_patcher = patch("client.get_json")
+        mock_get_json = cls.get_patcher.start()
+
+        def side_effect(url):
+            if url == f"https://api.github.com/orgs/google":
+                return cls.org_payload
+            elif url == cls.org_payload["repos_url"]:
+                return cls.repos_payload
+            else:
+                raise ValueError(f"Unhandled URL: {url}")
+
+        mock_get_json.side_effect = side_effect
