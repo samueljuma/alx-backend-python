@@ -15,6 +15,20 @@ from fixtures import TEST_PAYLOAD
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
 
+    @classmethod
+    def setUpClass(cls):
+        """Runs once before any test methods in this class"""
+
+        # Create a mock that simulates sequential responses for .json() calls
+        config = {'return_value.json.side_effect': [
+            cls.org_payload, cls.repos_payload,
+            cls.org_payload, cls.repos_payload
+        ]}
+        # Patch 'requests.get' with the above mock configuration
+        cls.get_patcher = patch('requests.get', **config)
+        # Activate the patch and store the mock for use in test assertions
+        cls.mock = cls.get_patcher.start()
+
     @parameterized.expand([
         ("google",),
         ("abc",),
@@ -83,20 +97,6 @@ class TestGithubOrgClient(unittest.TestCase):
         """Test has_license returns correct boolean"""
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
-
-    @classmethod
-    def setUpClass(cls):
-        """Runs once before any test methods in this class"""
-
-        # Create a mock that simulates sequential responses for .json() calls
-        config = {'return_value.json.side_effect': [
-            cls.org_payload, cls.repos_payload,
-            cls.org_payload, cls.repos_payload
-        ]}
-        # Patch 'requests.get' with the above mock configuration
-        cls.get_patcher = patch('requests.get', **config)
-        # Activate the patch and store the mock for use in test assertions
-        cls.mock = cls.get_patcher.start()
 
     def test_public_repos(self):
         """Tests that the correct repos are returned and mock was called"""
