@@ -1,6 +1,7 @@
 
 import uuid
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password
 from django.db import models
 
 
@@ -16,10 +17,16 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='guest', blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    password = models.CharField(max_length=128)
 
-    # Overrides username field to use email as the unique identifier
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
+    def save(self, *args, **kwargs):
+        # Ensure password is hashed if provided in plain text
+        if self.pk is None or not self.password.startswith('pbkdf2_'):
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.role})"
