@@ -1,0 +1,12 @@
+aiosqlite==0.21.0
+autopep8==2.3.2
+certifi==2025.7.14
+charset-normalizer==3.4.2
+idna==3.10
+memoization==0.4.0
+mysql-connector-python==9.3.0
+parameterized==0.9.0
+pycodestyle==2.14.0
+requests==2.32.4
+typing_extensions==4.14.1
+urllib3==2.5.0

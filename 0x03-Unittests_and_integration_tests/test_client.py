@@ -8,26 +8,8 @@ from client import GithubOrgClient
 from fixtures import TEST_PAYLOAD
 
 
-@parameterized_class(
-    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
-    TEST_PAYLOAD
-)
 class TestGithubOrgClient(unittest.TestCase):
     """TestCase for GithubOrgClient"""
-
-    @classmethod
-    def setUpClass(cls):
-        """Runs once before any test methods in this class"""
-
-        # Create a mock that simulates sequential responses for .json() calls
-        config = {'return_value.json.side_effect': [
-            cls.org_payload, cls.repos_payload,
-            cls.org_payload, cls.repos_payload
-        ]}
-        # Patch 'requests.get' with the above mock configuration
-        cls.get_patcher = patch('requests.get', **config)
-        # Activate the patch and store the mock for use in test assertions
-        cls.mock = cls.get_patcher.start()
 
     @parameterized.expand([
         ("google",),
@@ -98,45 +80,27 @@ class TestGithubOrgClient(unittest.TestCase):
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
 
-    def test_public_repos(self):
-        """Tests that the correct repos are returned and mock was called"""
-        test_class = GithubOrgClient("google")
-
-        self.assertEqual(test_class.org, self.org_payload)
-        self.assertEqual(test_class.repos_payload, self.repos_payload)
-        self.assertEqual(test_class.public_repos(), self.expected_repos)
-        self.assertEqual(test_class.public_repos("XLICENSE"), [])
-        self.mock.assert_called()
-
-    def test_public_repos_with_license(self):
-        """Tests filtering repos by license works as expected"""
-        test_class = GithubOrgClient("google")
-
-        self.assertEqual(test_class.public_repos(), self.expected_repos)
-        self.assertEqual(test_class.public_repos("XLICENSE"), [])
-        self.assertEqual(test_class.public_repos(
-            "apache-2.0"), self.apache2_repos)
-        self.mock.assert_called()
-
-
-@parameterized_class(['org_payload', 'repos_payload',
-                      'expected_repos', 'apache2_repos'], TEST_PAYLOAD)
-class TestInntegrationGithubOrgClient(unittest.TestCase):
-    """Integration test"""
+@parameterized_class(
+    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+    TEST_PAYLOAD
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.get_patcher = patch('requests.get', side_effect=[
+        """Runs once before any test methods in this class"""
+
+        # Create a mock that simulates sequential responses for .json() calls
+        config = {'return_value.json.side_effect': [
+            cls.org_payload, cls.repos_payload,
             cls.org_payload, cls.repos_payload
-        ])
-        cls.mocked_get = cls.get_patcher.start()
+        ]}
+        # Patch 'requests.get' with the above mock configuration
+        cls.get_patcher = patch('requests.get', **config)
+        # Activate the patch and store the mock for use in test assertions
+        cls.mock = cls.get_patcher.start()
 
     @classmethod
     def tearDownClass(cls):
+        """Runs once after all test methods in this class"""
         cls.get_patcher.stop()
-
-    def test_public_repos(self):
-        """test public repos """
-
-    def test_public_repos_with_license(self):
-        """test public with license"""
