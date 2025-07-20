@@ -32,9 +32,10 @@ class MessageViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['sent_at']
 
+
     def get_queryset(self):
-        
-        conversation_id = self.request.query_params.get('conversation_id')
+        conversation_id = self.kwargs.get('conversation_pk') 
+
         qs = Message.objects.all().select_related('sender', 'conversation')
 
         if conversation_id:
@@ -42,8 +43,9 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         return qs.order_by('sent_at')
 
+
     def create(self, request, *args, **kwargs):
-        conversation_id = request.data.get('conversation')
+        conversation_id = kwargs.get('conversation_pk')
         sender_id = request.data.get('sender')
 
         conversation = get_object_or_404(Conversation, conversation_id=conversation_id)
@@ -56,3 +58,4 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
