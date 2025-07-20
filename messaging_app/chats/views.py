@@ -4,10 +4,13 @@ from rest_framework.decorators import action
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework import filters
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all().prefetch_related('participants', 'messages')
     serializer_class = ConversationSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at']
 
     def create(self, request, *args, **kwargs):
         participant_ids = request.data.get('participants')
@@ -26,6 +29,8 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['sent_at']
 
     def get_queryset(self):
         
