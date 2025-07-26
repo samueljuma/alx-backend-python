@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters
 from .permissions import IsParticipantOfConversation
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all().prefetch_related('participants', 'messages')
@@ -39,18 +40,18 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]  # Ensures only participants can access messages
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['sent_at']
-
-
+    
     def get_queryset(self):
-        conversation_id = self.kwargs.get('conversation_pk') 
+        conversation_id = self.kwargs.get('conversation_pk')
 
-        qs = Message.objects.all().select_related('sender', 'conversation')
+        # Include Message.objects.filter
+        queryset = Message.objects.filter(conversation__conversation_id=conversation_id)
 
-        if conversation_id:
-            qs = qs.filter(conversation__conversation_id=conversation_id)
+        # Enforce participant-only access, return HTTP_403_FORBIDDEN if not participant
+        if not Conversation.objects.filter(conversation_id=conversation_id, participants=self.request.user).exists():
+            raise PermissionDenied(detail="You do not have permission to view these messages.", code=status.HTTP_403_FORBIDDEN)
 
-        # Filter messages by the current user's conversations
-        return qs.filter(conversation__participants=self.request.user).order_by('sent_at')
+        return queryset.select_related('sender', 'conversation').order_by('sent_at')
 
 
     def create(self, request, *args, **kwargs):
