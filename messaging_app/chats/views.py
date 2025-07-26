@@ -5,10 +5,12 @@ from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
+from .permissions import IsParticipantOfConversation
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all().prefetch_related('participants', 'messages')
     serializer_class = ConversationSerializer
+    permission_classes = [IsParticipantOfConversation]  # Ensures only participants can access conversations
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created_at']
 
@@ -25,10 +27,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
         conversation.participants.set(participant_ids)
         serializer = self.get_serializer(conversation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def get_queryset(self):
+        return Conversation.objects.filter(participants=self.request.user).prefetch_related('participants', 'messages')
+
 
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
+    permission_classes = [IsParticipantOfConversation]  # Ensures only participants can access messages
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['sent_at']
 
@@ -41,7 +48,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         if conversation_id:
             qs = qs.filter(conversation__conversation_id=conversation_id)
 
-        return qs.order_by('sent_at')
+        # Filter messages by the current user's conversations
+        return qs.filter(conversation__participants=self.request.user).order_by('sent_at')
 
 
     def create(self, request, *args, **kwargs):

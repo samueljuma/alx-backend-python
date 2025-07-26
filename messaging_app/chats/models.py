@@ -12,7 +12,7 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     ]
 
-    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='guest', blank=False, null=False)
@@ -27,6 +27,7 @@ class User(AbstractUser):
         if self.pk is None or not self.password.startswith('pbkdf2_'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
+    
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.role})"
