@@ -6,11 +6,12 @@ from .serializers import ConversationSerializer, MessageSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
 from .permissions import IsParticipantOfConversation
+from rest_framework.permissions import IsAuthenticated
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all().prefetch_related('participants', 'messages')
     serializer_class = ConversationSerializer
-    permission_classes = [IsParticipantOfConversation]  # Ensures only participants can access conversations
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]  # Ensures only participants can access conversations
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['created_at']
 
@@ -35,7 +36,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
-    permission_classes = [IsParticipantOfConversation]  # Ensures only participants can access messages
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]  # Ensures only participants can access messages
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['sent_at']
 
@@ -66,4 +67,5 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
