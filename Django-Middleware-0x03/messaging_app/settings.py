@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'chats.middleware.RequestLoggingMiddleware',  # Custom middleware for logging requests
     'chats.middleware.RestrictAccessByTimeMiddleware',  # Custom middleware to restrict access by time
+    'chats.middleware.OffensiveLanguageMiddleware',  # Custom middleware to handle offensive language and rate limiting
 ]
 
 ROOT_URLCONF = 'messaging_app.urls'
