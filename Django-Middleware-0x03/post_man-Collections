@@ -1,0 +1,21 @@
+
+{
+    "count": 1,
+    "total_pages": 1,
+    "current_page": 1,
+    "results": [
+        {
+            "message_id": "96378f66-377a-4d5c-87c0-83ec0eca3c90",
+            "sender": {
+                "id": "f394e222-3525-4f43-bc81-d770a571625e",
+                "first_name": "Becky",
+                "last_name": "Misiko",
+                "email": "becky@gmail.com",
+                "phone_number": null,
+                "role": "guest"
+            },
+            "message_body": "Hi, Are there any houses at the moment.",
+            "sent_at": "2025-07-19T14:50:57.993552Z"
+        }
+    ]
+}
