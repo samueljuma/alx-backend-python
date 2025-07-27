@@ -14,6 +14,24 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
+
+class RolePermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Ensure the user is authenticated before checking the role
+        if request.user.is_authenticated:
+            user_role = getattr(request.user, 'role', None)
+            if user_role not in ['admin']:
+                return JsonResponse(
+                    {"error": "Access denied. Only admin users are allowed."},
+                    status=403
+                )
+
+        return self.get_response(request)
+    
+
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -70,20 +88,5 @@ class OffensiveLanguageMiddleware:
         return request.META.get('REMOTE_ADDR')
 
 
-class RolePermissionMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        # Ensure the user is authenticated before checking the role
-        if request.user.is_authenticated:
-            user_role = getattr(request.user, 'role', None)
-            if user_role not in ['admin']:
-                return JsonResponse(
-                    {"error": "Access denied. Only admin users are allowed."},
-                    status=403
-                )
-
-        return self.get_response(request)
 
 
