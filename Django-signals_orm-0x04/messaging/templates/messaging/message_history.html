@@ -1,0 +1,8 @@
+<h2>Edit History for Message {{ message.id }}</h2>
+<ul>
+  {% for entry in history %}
+    <li>{{ entry.edited_at }} - {{ entry.old_content }}</li>
+  {% empty %}
+    <li>No edit history available.</li>
+  {% endfor %}
+</ul>

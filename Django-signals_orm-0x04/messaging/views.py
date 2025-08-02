@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, render
+from .models import Message
 
 User = get_user_model()
 
@@ -11,3 +13,12 @@ def delete_user(request):
         request.user.delete()
         return redirect('home')
     return HttpResponseForbidden("Invalid request method")
+
+
+def message_history_view(request, message_id):
+    message = get_object_or_404(Message, id=message_id)
+    history = message.history.all().order_by('-edited_at')
+    return render(request, 'messaging/message_history.html', {
+        'message': message,
+        'history': history,
+    })
