@@ -5,6 +5,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 from .models import Message
 from django.db.models import Prefetch
+from django.views.decorators.cache import cache_page
 
 User = get_user_model()
 
@@ -24,7 +25,7 @@ def message_history_view(request, message_id):
         'history': history,
     })
 
-
+@cache_page(60)
 @login_required
 def threaded_conversation(request, user_id):
     messages = Message.objects.filter(
