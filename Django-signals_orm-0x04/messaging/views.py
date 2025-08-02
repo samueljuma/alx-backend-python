@@ -25,9 +25,12 @@ def message_history_view(request, message_id):
     })
 
 
+@login_required
 def threaded_conversation(request, user_id):
     messages = Message.objects.filter(
-        receiver_id=user_id, parent_message__isnull=True
+        sender=request.user,
+        receiver_id=user_id,
+        parent_message__isnull=True
     ).select_related('sender', 'receiver').prefetch_related(
         Prefetch('replies', queryset=Message.objects.select_related('sender'))
     )
